@@ -9,14 +9,10 @@ const NewBook = () => {
 	const [genre, setGenre] = useState('')
 	const [genres, setGenres] = useState([])
 
-	const [addBook, result] = useMutation(ADD_BOOK)
-
-	console.log(result)
+	const [addBook] = useMutation(ADD_BOOK)
 
 	const submitHandler = async (event) => {
 		event.preventDefault()
-
-		console.log(typeof published)
 
 		addBook({ variables: { title, author, published, genres } })
 

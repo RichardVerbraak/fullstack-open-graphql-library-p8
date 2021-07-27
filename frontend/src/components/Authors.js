@@ -3,6 +3,8 @@ import { useQuery } from '@apollo/client'
 
 import { GET_AUTHORS } from '../queries'
 
+import EditBirthForm from './EditBirthForm'
+
 const Authors = () => {
 	const { data } = useQuery(GET_AUTHORS)
 
@@ -26,6 +28,7 @@ const Authors = () => {
 						))}
 				</tbody>
 			</table>
+			<EditBirthForm />
 		</div>
 	)
 }
