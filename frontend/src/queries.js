@@ -10,4 +10,14 @@ const getAuthors = gql`
 	}
 `
 
-export { getAuthors }
+const getBooks = gql`
+	query {
+		allBooks {
+			title
+			author
+			published
+		}
+	}
+`
+
+export { getAuthors, getBooks }
