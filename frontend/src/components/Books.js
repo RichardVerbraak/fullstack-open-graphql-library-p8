@@ -1,9 +1,9 @@
 import { useQuery } from '@apollo/client'
 import React from 'react'
-import { getBooks } from '../queries'
+import { GET_BOOKS } from '../queries'
 
 const Books = () => {
-	const { data } = useQuery(getBooks)
+	const { data } = useQuery(GET_BOOKS)
 
 	return (
 		<div>

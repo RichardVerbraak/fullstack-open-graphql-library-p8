@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { useMutation } from '@apollo/client'
+import { ADD_BOOK } from '../queries'
 
 const NewBook = () => {
 	const [title, setTitle] = useState('')
@@ -7,10 +9,16 @@ const NewBook = () => {
 	const [genre, setGenre] = useState('')
 	const [genres, setGenres] = useState([])
 
-	const submit = async (event) => {
+	const [addBook, result] = useMutation(ADD_BOOK)
+
+	console.log(result)
+
+	const submitHandler = async (event) => {
 		event.preventDefault()
 
-		console.log('add book...')
+		console.log(typeof published)
+
+		addBook({ variables: { title, author, published, genres } })
 
 		setTitle('')
 		setPublished('')
@@ -20,13 +28,13 @@ const NewBook = () => {
 	}
 
 	const addGenre = () => {
-		setGenres(genres.concat(genre))
+		setGenres([...genres, genre])
 		setGenre('')
 	}
 
 	return (
 		<div>
-			<form onSubmit={submit}>
+			<form onSubmit={submitHandler}>
 				<div>
 					title
 					<input
@@ -46,7 +54,7 @@ const NewBook = () => {
 					<input
 						type='number'
 						value={published}
-						onChange={({ target }) => setPublished(target.value)}
+						onChange={({ target }) => setPublished(parseInt(target.value))}
 					/>
 				</div>
 				<div>

@@ -1,10 +1,10 @@
 import React from 'react'
 import { useQuery } from '@apollo/client'
 
-import { getAuthors } from '../queries'
+import { GET_AUTHORS } from '../queries'
 
 const Authors = () => {
-	const { data } = useQuery(getAuthors)
+	const { data } = useQuery(GET_AUTHORS)
 
 	return (
 		<div>
