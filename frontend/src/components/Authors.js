@@ -28,7 +28,8 @@ const Authors = () => {
 						))}
 				</tbody>
 			</table>
-			<EditBirthForm />
+
+			{data && <EditBirthForm authors={data.allAuthors} />}
 		</div>
 	)
 }

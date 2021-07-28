@@ -6,6 +6,7 @@ const GET_AUTHORS = gql`
 			name
 			bookCount
 			born
+			id
 		}
 	}
 `
@@ -42,6 +43,7 @@ const EDIT_AUTHOR = gql`
 		editAuthor(name: $name, setBornTo: $born) {
 			name
 			born
+			id
 		}
 	}
 `
