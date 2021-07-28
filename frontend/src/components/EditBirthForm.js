@@ -3,7 +3,8 @@ import { useMutation } from '@apollo/client'
 import { EDIT_AUTHOR } from '../queries'
 
 const EditBirthForm = ({ authors }) => {
-	const [name, setName] = useState('')
+	// Name is set to the first author
+	const [name, setName] = useState(authors[0].name)
 	const [born, setBorn] = useState('')
 	const [message, setMessage] = useState('')
 
@@ -19,7 +20,6 @@ const EditBirthForm = ({ authors }) => {
 	}
 
 	useEffect(() => {
-		console.log(result)
 		if (result.data && result.data.editAuthor === null) {
 			setMessage('User does not exist')
 		}
@@ -33,13 +33,19 @@ const EditBirthForm = ({ authors }) => {
 				<div>
 					<label>
 						name
-						<input
-							type='text'
-							name='name'
+						<select
 							onChange={(e) => {
 								setName(e.target.value)
 							}}
-						/>
+						>
+							{authors.map((author) => {
+								return (
+									<option key={author.name} value={author.name}>
+										{author.name}
+									</option>
+								)
+							})}
+						</select>
 					</label>
 				</div>
 
