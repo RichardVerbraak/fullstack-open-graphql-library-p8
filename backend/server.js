@@ -1,4 +1,9 @@
 const { ApolloServer, gql } = require('apollo-server')
+const connectDB = require('./config/db')
+
+require('dotenv').config()
+
+connectDB()
 
 let authors = [
 	{
