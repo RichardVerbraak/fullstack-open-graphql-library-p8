@@ -87,75 +87,87 @@ const resolvers = {
 	},
 
 	Query: {
-		bookCount: () => {
-			return books.length
+		bookCount: async () => {
+			const booksLength = await Book.countDocuments()
+			console.log(booksLength)
+			return booksLength
 		},
-		authorCount: () => {
-			return authors.length
+		authorCount: async () => {
+			const authorsLength = await Author.countDocuments()
+			return authorsLength
 		},
-		allBooks: (root, args) => {
-			if (args.name && args.genre) {
-				const filteredBooks = books
-					.filter((book) => {
-						return book.author === args.name
-					})
-					.filter((book) => {
-						return book.genres.includes(args.genre.toLowerCase())
-					})
+		allBooks: async (root, args) => {
+			// if (args.name && args.genre) {
+			// 	const filteredBooks = books
+			// 		.filter((book) => {
+			// 			return book.author === args.name
+			// 		})
+			// 		.filter((book) => {
+			// 			return book.genres.includes(args.genre.toLowerCase())
+			// 		})
 
-				return filteredBooks
-			}
+			// 	return filteredBooks
+			// }
 
-			if (args.name) {
-				const booksByAuthor = books.filter((book) => {
-					return book.author === args.name
-				})
+			// if (args.name) {
+			// 	const booksByAuthor = books.filter((book) => {
+			// 		return book.author === args.name
+			// 	})
 
-				return booksByAuthor
-			}
+			// 	return booksByAuthor
+			// }
 
-			if (args.genre) {
-				const booksByGenre = books.filter((book) => {
-					return book.genres.includes(args.genre.toLowerCase())
-				})
+			// if (args.genre) {
+			// 	const booksByGenre = books.filter((book) => {
+			// 		return book.genres.includes(args.genre.toLowerCase())
+			// 	})
 
-				return booksByGenre
-			}
+			// 	return booksByGenre
+			// }
+
+			const books = await Book.find({})
 
 			return books
 		},
-		allAuthors: () => {
+		allAuthors: async () => {
+			const authors = await Author.find({})
 			return authors
 		},
 	},
 
 	Mutation: {
-		addBook: (root, args) => {
+		addBook: async (root, args) => {
 			const { title, author, published, genres } = args
 
-			const authorExists = authors.find((author) => {
-				return author.name === author
-			})
+			// Find if authors exists
+			const authorExists = await Author.findOne({ name: author })
 
+			// Add author if he doesn't exist and reference new author id in the book
+			// If he does, reference the existing author
 			if (!authorExists) {
-				const newAuthor = {
+				const newAuthor = await Author.create({
 					name: author,
 					born: null,
-				}
+				})
 
-				authors = [...authors, newAuthor]
+				const newBook = await Book.create({
+					title,
+					published,
+					genres,
+					author: newAuthor._id,
+				})
+
+				return newBook
+			} else {
+				const newBook = await Book.create({
+					title,
+					published,
+					genres,
+					author: authorExists._id,
+				})
+
+				return newBook
 			}
-
-			const book = {
-				title,
-				author,
-				published,
-				genres,
-			}
-
-			books = [...books, book]
-
-			return book
 		},
 
 		editAuthor: (root, args) => {
