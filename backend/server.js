@@ -74,15 +74,11 @@ const typeDefs = gql`
 
 const resolvers = {
 	Author: {
-		bookCount: (root, args) => {
-			// This function runs for every author
-			// it checks if the name (root author object name) is the same as the books author
-			// filter then returns an array with only those books and returns the length of them
-			const count = books.filter((book) => {
-				return book.author === root.name
-			})
+		bookCount: async (root, args) => {
+			// Finds all Books with the author's id
+			const author = await Book.find({ author: { $in: [root._id] } })
 
-			return count.length
+			return author.length
 		},
 	},
 
