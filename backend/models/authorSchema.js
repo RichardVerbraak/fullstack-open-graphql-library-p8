@@ -1,8 +1,15 @@
 const mongoose = require('mongoose')
 
 const authorSchema = mongoose.Schema({
-	name: { type: String, required: true, unique: true },
-	born: { type: Number, require: true },
+	name: {
+		type: String,
+		required: true,
+		unique: true,
+		minLength: 4,
+	},
+	born: {
+		type: Number,
+	},
 })
 
 module.exports = mongoose.model('Author', authorSchema)
