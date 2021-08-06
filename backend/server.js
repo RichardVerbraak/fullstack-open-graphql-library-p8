@@ -145,26 +145,33 @@ const resolvers = {
 			// Add author if he doesn't exist and reference new author id in the book
 			// If he does, reference the existing author
 			if (!authorExists) {
+				// Create author
 				const newAuthor = await Author.create({
 					name: author,
 					born: null,
 				})
 
-				const newBook = await Book.create({
+				// Create book
+				let newBook = await Book.create({
 					title,
 					published,
 					genres,
 					author: newAuthor._id,
 				})
 
+				// Set newBook to the returned populated one (can't populate on creation)
+				newBook = await Book.findById(newBook._id).populate('author')
+
 				return newBook
 			} else {
-				const newBook = await Book.create({
+				let newBook = await Book.create({
 					title,
 					published,
 					genres,
 					author: authorExists._id,
 				})
+
+				newBook = await Book.findById(newBook._id).populate('author')
 
 				return newBook
 			}
