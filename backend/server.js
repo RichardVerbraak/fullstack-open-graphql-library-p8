@@ -17,8 +17,8 @@ require('dotenv').config()
 connectDB()
 
 const importData = async () => {
-	await Book.insertMany(books)
 	await Author.insertMany(authors)
+	await Book.insertMany(books)
 }
 
 const deleteData = async () => {
@@ -41,9 +41,10 @@ if (process.argv[2] === 'delete') {
 const typeDefs = gql`
 	type Book {
 		title: String!
-		author: String!
+		author: Author!
 		published: Int!
 		genres: [String!]
+		id: ID!
 	}
 
 	type Author {
