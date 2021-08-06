@@ -76,4 +76,4 @@ let books = [
 	},
 ]
 
-export { books, authors }
+module.exports = { books, authors }

@@ -6,6 +6,7 @@ const connectDB = require('./config/db')
 
 // Mongoose Models
 const Book = require('./models/bookSchema')
+const Author = require('./models/authorSchema')
 
 // Seeder data
 const { books, authors } = require('./seederData')
@@ -15,8 +16,26 @@ require('dotenv').config()
 
 connectDB()
 
-if (process.env.args[2] === 'import') {
+const importData = async () => {
 	await Book.insertMany(books)
+	await Author.insertMany(authors)
+}
+
+const deleteData = async () => {
+	await Book.deleteMany()
+	await Author.deleteMany()
+}
+
+console.log(process.env.argv)
+
+if (process.argv[2] === 'import') {
+	importData()
+	console.log('Import succesful')
+}
+
+if (process.argv[2] === 'delete') {
+	deleteData()
+	console.log('Delete succesful')
 }
 
 const typeDefs = gql`
