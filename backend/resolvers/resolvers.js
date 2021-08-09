@@ -1,4 +1,4 @@
-const { UserInputError } = require('apollo-server')
+const { UserInputError, AuthenticationError } = require('apollo-server')
 
 const Book = require('../models/bookSchema')
 const Author = require('../models/authorSchema')
@@ -56,8 +56,13 @@ const resolvers = {
 	},
 
 	Mutation: {
-		addBook: async (root, args) => {
+		addBook: async (root, args, context) => {
 			const { title, author, published, genres } = args
+			const loggedInUser = context.loggedInUser
+
+			if (!loggedInUser) {
+				throw new AuthenticationError('Not authorized')
+			}
 
 			// Find if authors exists
 			const authorExists = await Author.findOne({ name: author })
@@ -101,7 +106,13 @@ const resolvers = {
 			}
 		},
 
-		editAuthor: async (root, args) => {
+		editAuthor: async (root, args, context) => {
+			const loggedInUser = context.loggedInUser
+
+			if (!loggedInUser) {
+				throw new AuthenticationError('Not authorized')
+			}
+
 			const foundAuthor = await Author.findOne({ name: args.name })
 
 			if (!foundAuthor) {
