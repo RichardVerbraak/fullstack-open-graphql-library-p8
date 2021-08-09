@@ -1,5 +1,5 @@
 // Apollo
-const { ApolloServer, gql } = require('apollo-server')
+const { ApolloServer, gql, UserInputError } = require('apollo-server')
 
 // DB connect
 const connectDB = require('./config/db')
@@ -76,6 +76,7 @@ const resolvers = {
 	Author: {
 		bookCount: async (root, args) => {
 			// Finds all Books with the author's id
+			// $in could be read as includes, the weird syntax is just due to mongoose API
 			const author = await Book.find({ author: { $in: [root._id] } })
 
 			return author.length
@@ -85,42 +86,25 @@ const resolvers = {
 	Query: {
 		bookCount: async () => {
 			const booksLength = await Book.countDocuments()
-			console.log(booksLength)
+
 			return booksLength
 		},
 		authorCount: async () => {
 			const authorsLength = await Author.countDocuments()
+
 			return authorsLength
 		},
 		allBooks: async (root, args) => {
-			// if (args.name && args.genre) {
-			// 	const filteredBooks = books
-			// 		.filter((book) => {
-			// 			return book.author === args.name
-			// 		})
-			// 		.filter((book) => {
-			// 			return book.genres.includes(args.genre.toLowerCase())
-			// 		})
+			if (args.genre) {
+				// Finds the books by genre
+				const booksByGenre = await Book.find({
+					genres: { $in: [args.genre] },
+				})
 
-			// 	return filteredBooks
-			// }
+				return booksByGenre
+			}
 
-			// if (args.name) {
-			// 	const booksByAuthor = books.filter((book) => {
-			// 		return book.author === args.name
-			// 	})
-
-			// 	return booksByAuthor
-			// }
-
-			// if (args.genre) {
-			// 	const booksByGenre = books.filter((book) => {
-			// 		return book.genres.includes(args.genre.toLowerCase())
-			// 	})
-
-			// 	return booksByGenre
-			// }
-
+			// Finds all books when no args
 			const books = await Book.find({})
 
 			return books
@@ -138,38 +122,42 @@ const resolvers = {
 			// Find if authors exists
 			const authorExists = await Author.findOne({ name: author })
 
-			// Add author if he doesn't exist and reference new author id in the book
-			// If he does, reference the existing author
-			if (!authorExists) {
-				// Create author
-				const newAuthor = await Author.create({
-					name: author,
-					born: null,
-				})
+			try {
+				if (!authorExists) {
+					// Add author if he doesn't exist and reference new author id in the book
+					// If he does, reference the existing author
+					const newAuthor = await Author.create({
+						name: author,
+						born: null,
+					})
 
-				// Create book
-				let newBook = await Book.create({
-					title,
-					published,
-					genres,
-					author: newAuthor._id,
-				})
+					// Create book
+					let newBook = await Book.create({
+						title,
+						published,
+						genres,
+						author: newAuthor._id,
+					})
 
-				// Set newBook to the returned populated one (can't populate on creation)
-				newBook = await Book.findById(newBook._id).populate('author')
+					// Set newBook to the returned populated one (can't populate on creation)
+					newBook = await Book.findById(newBook._id).populate('author')
 
-				return newBook
-			} else {
-				let newBook = await Book.create({
-					title,
-					published,
-					genres,
-					author: authorExists._id,
-				})
+					return newBook
+				} else {
+					// If author already exists, create only the book
+					let newBook = await Book.create({
+						title,
+						published,
+						genres,
+						author: authorExists._id,
+					})
 
-				newBook = await Book.findById(newBook._id).populate('author')
+					newBook = await Book.findById(newBook._id).populate('author')
 
-				return newBook
+					return newBook
+				}
+			} catch (error) {
+				throw new UserInputError(error.message, { invalidArgs: args })
 			}
 		},
 
