@@ -1,6 +1,10 @@
 const { UserInputError } = require('apollo-server')
+
 const Book = require('../models/bookSchema')
 const Author = require('../models/authorSchema')
+
+const jwt = require('jsonwebtoken')
+const User = require('../models/userSchema')
 
 const resolvers = {
 	Author: {
@@ -43,6 +47,8 @@ const resolvers = {
 			const authors = await Author.find({})
 			return authors
 		},
+
+		me: async () => {},
 	},
 
 	Mutation: {
@@ -103,6 +109,42 @@ const resolvers = {
 			await foundAuthor.save()
 
 			return foundAuthor
+		},
+
+		createUser: async (root, args) => {
+			const { username, favoriteGenre } = args
+
+			try {
+				// All users will have the password of 'secret'
+				const user = await User.create({
+					username,
+					favoriteGenre,
+					password: 'secret',
+				})
+
+				return user
+			} catch (error) {
+				console.log(error.message)
+				throw new UserInputError(error.message)
+			}
+		},
+
+		login: async (root, args) => {
+			const { username, password } = args
+
+			try {
+				const user = await User.findOne({ username })
+
+				if (user && password === 'secret') {
+					const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
+					console.log(token)
+
+					return { value: token }
+				}
+			} catch (error) {
+				console.log(error.message)
+				throw new UserInputError(error.message)
+			}
 		},
 	},
 }

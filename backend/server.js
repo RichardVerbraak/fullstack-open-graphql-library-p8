@@ -28,8 +28,6 @@ const deleteData = async () => {
 	await Author.deleteMany()
 }
 
-console.log(process.env.argv)
-
 if (process.argv[2] === 'import') {
 	importData()
 	console.log('Import succesful')
