@@ -48,7 +48,7 @@ const resolvers = {
 			return authors
 		},
 
-		me: async (root, args, context) => {
+		me: (root, args, context) => {
 			const user = context.loggedInUser
 
 			return user
