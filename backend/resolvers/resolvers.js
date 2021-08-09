@@ -48,7 +48,11 @@ const resolvers = {
 			return authors
 		},
 
-		me: async () => {},
+		me: async (root, args, context) => {
+			const user = context.loggedInUser
+
+			return user
+		},
 	},
 
 	Mutation: {
