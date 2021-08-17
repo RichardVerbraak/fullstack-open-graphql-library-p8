@@ -17,6 +17,7 @@ const LoginForm = ({ setToken }) => {
 	useEffect(() => {
 		if (result.data) {
 			setToken(result.data.login.value)
+			localStorage.setItem('token', result.data.login.value)
 		}
 		//eslint-disable-next-line
 	}, [result.data])
