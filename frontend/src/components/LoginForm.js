@@ -1,15 +1,25 @@
-import { useLazyQuery } from '@apollo/client'
-import React, { useState } from 'react'
+import { useMutation } from '@apollo/client'
+import React, { useState, useEffect } from 'react'
+import { LOGIN } from '../queries'
 
-const LoginForm = () => {
+const LoginForm = ({ setToken }) => {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 
-	const [] = useLazyQuery()
+	const [login, result] = useMutation(LOGIN)
 
 	const submit = (e) => {
 		e.preventDefault()
+
+		login({ variables: { username, password } })
 	}
+
+	useEffect(() => {
+		if (result.data) {
+			setToken(result.data.login.value)
+		}
+		//eslint-disable-next-line
+	}, [result.data])
 
 	return (
 		<div>
@@ -29,6 +39,7 @@ const LoginForm = () => {
 						setPassword(e.target.value)
 					}}
 				/>
+				<button type='submit'>Submit</button>
 			</form>
 		</div>
 	)
