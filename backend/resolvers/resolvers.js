@@ -152,7 +152,6 @@ const resolvers = {
 
 				if (user && password === 'secret') {
 					const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
-					console.log(token)
 
 					return { value: token }
 				}
