@@ -1,5 +1,13 @@
 import { gql } from '@apollo/client'
 
+const LOGIN = gql`
+	query loginUser($username: String!, $password: String!) {
+		login(username: $username, password: $password) {
+			token
+		}
+	}
+`
+
 const GET_AUTHORS = gql`
 	query {
 		allAuthors {
@@ -47,5 +55,4 @@ const EDIT_AUTHOR = gql`
 		}
 	}
 `
-
-export { GET_AUTHORS, GET_BOOKS, ADD_BOOK, EDIT_AUTHOR }
+export { GET_AUTHORS, GET_BOOKS, ADD_BOOK, EDIT_AUTHOR, LOGIN }
