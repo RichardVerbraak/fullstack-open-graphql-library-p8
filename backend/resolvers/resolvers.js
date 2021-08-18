@@ -143,7 +143,7 @@ const resolvers = {
 				throw new UserInputError(error.message)
 			}
 		},
-
+		// Login, query or mutation? https://stackoverflow.com/questions/50189364/shouldnt-the-login-be-a-query-in-graphql
 		login: async (root, args) => {
 			const { username, password } = args
 
