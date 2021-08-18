@@ -37,13 +37,18 @@ const Books = () => {
 			<div>
 				{data &&
 					data.allBooks
+						// Reduces the books genres into one genres array
 						.reduce((initialValue, currentGenre) => {
 							return [...initialValue, ...currentGenre.genres]
 						}, [])
+						//!! Important to sort in ascending order i.e [Fantasy, Fantasy, Drama]
 						.sort()
-						.filter((genres, i, arr) => {
-							return genres !== arr[i - 1]
+						// Filter out the genre that is same as the previous genre (the genre that does not pass the test below)
+						// arr is the array filter was based upon, and [i - 1] is the previous genre
+						.filter((genre, i, arr) => {
+							return genre !== arr[i - 1]
 						})
+						// Create a genre button
 						.map((genre) => {
 							return (
 								<button
