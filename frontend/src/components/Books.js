@@ -6,8 +6,6 @@ const Books = () => {
 	const { data } = useQuery(GET_BOOKS)
 	const [filter, setFilter] = useState(null)
 
-	console.log(data)
-
 	return (
 		<div>
 			<h2>books</h2>
