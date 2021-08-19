@@ -6,7 +6,11 @@ const LoginForm = ({ setToken }) => {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 
-	const [login, result] = useMutation(LOGIN)
+	const [login, result] = useMutation(LOGIN, {
+		onError: (error) => {
+			console.log(error)
+		},
+	})
 
 	const submit = (e) => {
 		e.preventDefault()

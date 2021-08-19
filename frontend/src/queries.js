@@ -61,11 +61,9 @@ const EDIT_AUTHOR = gql`
 `
 
 const USER_DETAILS = gql`
-	query Query {
+	query userDetails {
 		me {
-			username
 			favoriteGenre
-			id
 		}
 	}
 `

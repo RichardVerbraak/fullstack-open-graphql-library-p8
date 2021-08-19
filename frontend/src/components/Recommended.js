@@ -11,7 +11,7 @@ const Recommended = () => {
 		<div>
 			<h2>recommendations</h2>
 
-			<p>books in your favorite genre</p>
+			<p>books in your favorite genre {data && data.me.favoriteGenre}</p>
 
 			<table></table>
 		</div>
