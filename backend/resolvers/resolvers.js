@@ -33,13 +33,13 @@ const resolvers = {
 				// Finds the books by genre
 				const booksByGenre = await Book.find({
 					genres: { $in: [args.genre] },
-				})
+				}).populate('author')
 
 				return booksByGenre
 			}
 
 			// Finds all books when no args
-			const books = await Book.find({})
+			const books = await Book.find({}).populate('author')
 
 			return books
 		},
