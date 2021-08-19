@@ -25,6 +25,10 @@ const GET_BOOKS = gql`
 			title
 			published
 			genres
+			author {
+				name
+				born
+			}
 		}
 	}
 `
@@ -55,4 +59,15 @@ const EDIT_AUTHOR = gql`
 		}
 	}
 `
-export { GET_AUTHORS, GET_BOOKS, ADD_BOOK, EDIT_AUTHOR, LOGIN }
+
+const USER_DETAILS = gql`
+	query Query {
+		me {
+			username
+			favoriteGenre
+			id
+		}
+	}
+`
+
+export { GET_AUTHORS, GET_BOOKS, ADD_BOOK, EDIT_AUTHOR, LOGIN, USER_DETAILS }

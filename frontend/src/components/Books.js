@@ -6,6 +6,8 @@ const Books = () => {
 	const { data } = useQuery(GET_BOOKS)
 	const [filter, setFilter] = useState(null)
 
+	console.log(data)
+
 	return (
 		<div>
 			<h2>books</h2>
@@ -26,7 +28,7 @@ const Books = () => {
 								return (
 									<tr key={book.title}>
 										<td>{book.title}</td>
-										<td>{book.author}</td>
+										<td>{book.author.name}</td>
 										<td>{book.published}</td>
 									</tr>
 								)

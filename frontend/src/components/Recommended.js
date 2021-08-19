@@ -1,8 +1,11 @@
 import React from 'react'
 import { useQuery } from '@apollo/client'
+import { USER_DETAILS } from '../queries'
 
 const Recommended = () => {
-	const {} = useQuery()
+	const { data } = useQuery(USER_DETAILS)
+
+	console.log(data)
 
 	return (
 		<div>
