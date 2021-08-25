@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { ADD_BOOK } from '../queries'
+import { ADD_BOOK, GET_BOOKS } from '../queries'
 
 const NewBook = () => {
 	const [title, setTitle] = useState('')
@@ -9,7 +9,23 @@ const NewBook = () => {
 	const [genre, setGenre] = useState('')
 	const [genres, setGenres] = useState([])
 
-	const [addBook] = useMutation(ADD_BOOK)
+	const [addBook] = useMutation(ADD_BOOK, {
+		update: (cache, { data: { addBook } }) => {
+			try {
+				const storedData = cache.readQuery({ query: GET_BOOKS })
+
+				cache.writeQuery({
+					query: GET_BOOKS,
+					data: {
+						...storedData,
+						allBooks: [...storedData.allBooks, addBook],
+					},
+				})
+			} catch (error) {
+				console.log(error)
+			}
+		},
+	})
 
 	const submitHandler = async (event) => {
 		event.preventDefault()

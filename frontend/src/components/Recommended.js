@@ -14,6 +14,7 @@ const Recommended = () => {
 				variables: { genre: data.me.favoriteGenre },
 			})
 		}
+		// eslint-disable-next-line
 	}, [data])
 
 	return (
