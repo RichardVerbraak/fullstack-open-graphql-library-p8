@@ -87,7 +87,7 @@ const startApolloServer = async (typeDefs, resolvers) => {
 		path: '/',
 	})
 	// Modified server startup
-	await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve))
+	await httpServer.listen({ port: 4000 })
 	console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
 }
 
