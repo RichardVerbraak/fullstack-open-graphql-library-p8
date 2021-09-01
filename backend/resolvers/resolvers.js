@@ -1,10 +1,16 @@
 const { UserInputError, AuthenticationError } = require('apollo-server-express')
 
+// Mongo Models
 const Book = require('../models/bookSchema')
 const Author = require('../models/authorSchema')
-
-const jwt = require('jsonwebtoken')
 const User = require('../models/userSchema')
+
+// Token
+const jwt = require('jsonwebtoken')
+
+// Init use of subscriptions
+const { PubSub } = require('graphql-subscriptions')
+const pubsub = new PubSub()
 
 const resolvers = {
 	Author: {
@@ -87,6 +93,9 @@ const resolvers = {
 					// Set newBook to the returned populated one (can't populate on creation)
 					newBook = await Book.findById(newBook._id).populate('author')
 
+					// Return the newBook details to the subscribers
+					pubsub.publish('BOOK_ADDED', { bookAdded: newBook })
+
 					return newBook
 				} else {
 					// If author already exists, create only the book
@@ -98,6 +107,9 @@ const resolvers = {
 					})
 
 					newBook = await Book.findById(newBook._id).populate('author')
+
+					// Return the newBook details to the subscribers
+					pubsub.publish('BOOK_ADDED', { bookAdded: newBook })
 
 					return newBook
 				}
@@ -159,6 +171,11 @@ const resolvers = {
 				console.log(error.message)
 				throw new UserInputError(error.message)
 			}
+		},
+	},
+	Subscription: {
+		bookAdded: {
+			subscribe: () => pubsub.asyncIterator(['BOOK_ADDED']),
 		},
 	},
 }

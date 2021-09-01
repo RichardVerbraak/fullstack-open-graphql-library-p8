@@ -1,14 +1,15 @@
 // Apollo
 const { ApolloServer } = require('apollo-server-express')
-const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core')
+
+// Setting up subscription support
 const express = require('express')
 const http = require('http')
 
-// Setting up subscription support
 const { execute, subscribe } = require('graphql')
 const { SubscriptionServer } = require('subscriptions-transport-ws')
 const { makeExecutableSchema } = require('@graphql-tools/schema')
 
+// GraphQL types and resolvers
 const typeDefs = require('./typeDefs/typeDefs')
 const resolvers = require('./resolvers/resolvers')
 
@@ -29,11 +30,16 @@ const jwt = require('jsonwebtoken')
 // Access to .env variables
 require('dotenv').config()
 
+// Init MongoDB connection
 connectDB()
 
+// Logic for importing seeder data or wiping the data from the DB
 const importData = async () => {
 	await Author.insertMany(authors)
-	await Book.insertMany(books)
+
+	//!! Directly inserting them to the DB doesn't work anymore because the author field of books should be the authors ID and not a string
+	// Author field being a reference to the Author schema and ref only works via the ObjectId type
+	// await Book.insertMany(books)
 }
 
 const deleteData = async () => {
@@ -51,6 +57,7 @@ if (process.argv[2] === 'delete') {
 	console.log('Delete succesful')
 }
 
+// Apollo Server init
 const startApolloServer = async (typeDefs, resolvers) => {
 	// Required logic for integrating with Express
 	const app = express()
