@@ -1,5 +1,9 @@
 // Apollo
-const { ApolloServer } = require('apollo-server')
+const { ApolloServer } = require('apollo-server-express')
+const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core')
+const express = require('express')
+const http = require('http')
+
 const typeDefs = require('./typeDefs/typeDefs')
 const resolvers = require('./resolvers/resolvers')
 
@@ -42,30 +46,49 @@ if (process.argv[2] === 'delete') {
 	console.log('Delete succesful')
 }
 
-const server = new ApolloServer({
-	typeDefs,
-	resolvers,
-	context: async ({ req }) => {
-		const auth = req ? req.headers.authorization : null
+const startApolloServer = async (typeDefs, resolvers) => {
+	// Required logic for integrating with Express
+	const app = express()
+	const httpServer = http.createServer(app)
 
-		const bearer = auth && auth.split(' ')[0].toLowerCase()
+	const server = new ApolloServer({
+		typeDefs,
+		resolvers,
+		plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+		context: async ({ req }) => {
+			const auth = req ? req.headers.authorization : null
 
-		// Checks for token
-		if (auth && bearer) {
-			// Verify token
-			const decodedToken = jwt.verify(
-				auth.split(' ')[1],
-				process.env.JWT_SECRET
-			)
+			const bearer = auth && auth.split(' ')[0].toLowerCase()
 
-			// Find user and populate the friends field
-			const loggedInUser = await User.findById(decodedToken.id)
+			// Checks for token
+			if (auth && bearer) {
+				// Verify token
+				const decodedToken = jwt.verify(
+					auth.split(' ')[1],
+					process.env.JWT_SECRET
+				)
 
-			return { loggedInUser }
-		}
-	},
-})
+				// Find user and populate the friends field
+				const loggedInUser = await User.findById(decodedToken.id)
 
-server.listen().then(({ url }) => {
-	console.log(`Server ready at ${url}`)
-})
+				return { loggedInUser }
+			}
+		},
+	})
+
+	// More required logic for integrating with Express
+	await server.start()
+	server.applyMiddleware({
+		app,
+
+		// By default, apollo-server hosts its GraphQL endpoint at the
+		// server root. However, *other* Apollo Server packages host it at
+		// /graphql. Optionally provide this to match apollo-server.
+		path: '/',
+	})
+	// Modified server startup
+	await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve))
+	console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+}
+
+startApolloServer(typeDefs, resolvers)
