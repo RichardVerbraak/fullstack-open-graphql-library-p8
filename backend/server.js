@@ -4,6 +4,11 @@ const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core')
 const express = require('express')
 const http = require('http')
 
+// Setting up subscription support
+const { execute, subscribe } = require('graphql')
+const { SubscriptionServer } = require('subscriptions-transport-ws')
+const { makeExecutableSchema } = require('@graphql-tools/schema')
+
 const typeDefs = require('./typeDefs/typeDefs')
 const resolvers = require('./resolvers/resolvers')
 
@@ -51,10 +56,22 @@ const startApolloServer = async (typeDefs, resolvers) => {
 	const app = express()
 	const httpServer = http.createServer(app)
 
+	// Setting up Subscription (doesn't take typeDefs and Resolvers but it does take an executable GraphQL schema)
+	const schema = makeExecutableSchema({ typeDefs, resolvers })
+
 	const server = new ApolloServer({
-		typeDefs,
-		resolvers,
-		plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+		schema,
+		plugins: [
+			{
+				async serverWillStart() {
+					return {
+						async drainServer() {
+							subscriptionServer.close()
+						},
+					}
+				},
+			},
+		],
 		context: async ({ req }) => {
 			const auth = req ? req.headers.authorization : null
 
@@ -75,6 +92,22 @@ const startApolloServer = async (typeDefs, resolvers) => {
 			}
 		},
 	})
+
+	const subscriptionServer = SubscriptionServer.create(
+		{
+			// This is the `schema` we just created.
+			schema,
+			// These are imported from `graphql`.
+			execute,
+			subscribe,
+		},
+		{
+			// This is the `httpServer` we created in a previous step.
+			server: httpServer,
+			// This `server` is the instance returned from `new ApolloServer`.
+			path: server.graphqlPath,
+		}
+	)
 
 	// More required logic for integrating with Express
 	await server.start()
