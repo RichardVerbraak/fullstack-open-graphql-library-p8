@@ -3,7 +3,7 @@ const { ApolloServer } = require('apollo-server-express')
 
 // Setting up subscription support
 const express = require('express')
-const http = require('http')
+const { createServer } = require('http')
 
 const { execute, subscribe } = require('graphql')
 const { SubscriptionServer } = require('subscriptions-transport-ws')
@@ -22,7 +22,7 @@ const Author = require('./models/authorSchema')
 const User = require('./models/userSchema')
 
 // Seeder data
-const { books, authors } = require('./seederData')
+const { authors } = require('./seederData')
 
 // JWT Token
 const jwt = require('jsonwebtoken')
@@ -57,11 +57,12 @@ if (process.argv[2] === 'delete') {
 	console.log('Delete succesful')
 }
 
+// !!! Subscription server will only listen in the gql sandbox if you start with a 'fresh' subscription operation
 // Apollo Server init
 const startApolloServer = async (typeDefs, resolvers) => {
 	// Required logic for integrating with Express
 	const app = express()
-	const httpServer = http.createServer(app)
+	const httpServer = createServer(app)
 
 	// Setting up Subscription (doesn't take typeDefs and Resolvers but it does take an executable GraphQL schema)
 	const schema = makeExecutableSchema({ typeDefs, resolvers })
