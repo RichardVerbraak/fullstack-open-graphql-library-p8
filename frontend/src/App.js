@@ -7,7 +7,7 @@ import LoginForm from './components/LoginForm'
 import NewBook from './components/NewBook'
 import Recommended from './components/Recommended'
 
-import { ADD_BOOK_SUBSCRIPTION } from './queries'
+import { ADD_BOOK_SUBSCRIPTION, GET_BOOKS } from './queries'
 
 const App = () => {
 	const [token, setToken] = useState(null)
@@ -20,13 +20,29 @@ const App = () => {
 		client.resetStore()
 	}
 
-	const { data, loading } = useSubscription(ADD_BOOK_SUBSCRIPTION)
+	const updateCache = (newBook) => {
+		const storedData = client.readQuery({ query: GET_BOOKS })
 
-	useEffect(() => {
-		if (data) {
-			window.alert(`Book ${data.bookAdded.title} has been added!`)
+		const existingBook = storedData.allBooks.includes(newBook)
+
+		if (!existingBook) {
+			client.writeQuery({
+				query: GET_BOOKS,
+				data: {
+					allBooks: [...storedData.allBooks, newBook],
+				},
+			})
 		}
-	}, [data])
+	}
+
+	// onSubscriptionData has the result so I'm using that like "useEffect"
+	useSubscription(ADD_BOOK_SUBSCRIPTION, {
+		onSubscriptionData: ({ subscriptionData }) => {
+			const newBook = subscriptionData.data.bookAdded
+			window.alert(`Book ${newBook.title} has been added!`)
+			updateCache(newBook)
+		},
+	})
 
 	return (
 		<div>
