@@ -68,4 +68,29 @@ const USER_DETAILS = gql`
 	}
 `
 
-export { GET_AUTHORS, GET_BOOKS, ADD_BOOK, EDIT_AUTHOR, LOGIN, USER_DETAILS }
+const ADD_BOOK_SUBSCRIPTION = gql`
+	subscription Subscription {
+		bookAdded {
+			title
+			author {
+				name
+				bookCount
+				born
+				id
+			}
+			published
+			genres
+			id
+		}
+	}
+`
+
+export {
+	GET_AUTHORS,
+	GET_BOOKS,
+	ADD_BOOK,
+	EDIT_AUTHOR,
+	LOGIN,
+	USER_DETAILS,
+	ADD_BOOK_SUBSCRIPTION,
+}

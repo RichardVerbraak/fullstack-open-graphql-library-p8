@@ -1,10 +1,13 @@
-import { useApolloClient } from '@apollo/client'
-import React, { useState } from 'react'
+import { useApolloClient, useSubscription } from '@apollo/client'
+import React, { useEffect, useState } from 'react'
+
 import Authors from './components/Authors'
 import Books from './components/Books'
 import LoginForm from './components/LoginForm'
 import NewBook from './components/NewBook'
 import Recommended from './components/Recommended'
+
+import { ADD_BOOK_SUBSCRIPTION } from './queries'
 
 const App = () => {
 	const [token, setToken] = useState(null)
@@ -16,6 +19,14 @@ const App = () => {
 		localStorage.removeItem('token')
 		client.resetStore()
 	}
+
+	const { data, loading } = useSubscription(ADD_BOOK_SUBSCRIPTION)
+
+	useEffect(() => {
+		if (data) {
+			window.alert(`Book ${data.bookAdded.title} has been added!`)
+		}
+	}, [data])
 
 	return (
 		<div>
