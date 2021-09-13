@@ -29,7 +29,9 @@ const Authors = () => {
 				</tbody>
 			</table>
 
-			{data && <EditBirthForm authors={data.allAuthors} />}
+			{data && data.allAuthors.length && (
+				<EditBirthForm authors={data.allAuthors} />
+			)}
 		</div>
 	)
 }
