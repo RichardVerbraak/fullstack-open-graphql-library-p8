@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { ADD_BOOK, GET_BOOKS } from '../queries'
 
+// Source for the published value being NaN and causing errors --
+// https://stackoverflow.com/questions/56381007/keep-a-variable-type-when-i-get-value-from-input-onchange-with-react-hooks
+
 const NewBook = () => {
 	const [title, setTitle] = useState('')
 	const [author, setAuhtor] = useState('')
