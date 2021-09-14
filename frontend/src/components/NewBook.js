@@ -5,7 +5,7 @@ import { ADD_BOOK, GET_BOOKS } from '../queries'
 const NewBook = () => {
 	const [title, setTitle] = useState('')
 	const [author, setAuhtor] = useState('')
-	const [published, setPublished] = useState(null)
+	const [published, setPublished] = useState()
 	const [genre, setGenre] = useState('')
 	const [genres, setGenres] = useState([])
 

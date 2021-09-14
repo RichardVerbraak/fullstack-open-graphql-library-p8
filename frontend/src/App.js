@@ -1,5 +1,5 @@
 import { useApolloClient, useSubscription } from '@apollo/client'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import Authors from './components/Authors'
 import Books from './components/Books'
@@ -21,17 +21,21 @@ const App = () => {
 	}
 
 	const updateCache = (newBook) => {
-		const storedData = client.readQuery({ query: GET_BOOKS })
+		try {
+			const storedData = client.readQuery({ query: GET_BOOKS })
 
-		const existingBook = storedData.allBooks.includes(newBook)
+			const existingBook = storedData.allBooks.includes(newBook)
 
-		if (!existingBook) {
-			client.writeQuery({
-				query: GET_BOOKS,
-				data: {
-					allBooks: [...storedData.allBooks, newBook],
-				},
-			})
+			if (!existingBook) {
+				client.writeQuery({
+					query: GET_BOOKS,
+					data: {
+						allBooks: [...storedData.allBooks, newBook],
+					},
+				})
+			}
+		} catch (error) {
+			console.log(error)
 		}
 	}
 
