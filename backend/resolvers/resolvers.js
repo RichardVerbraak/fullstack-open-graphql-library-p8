@@ -17,9 +17,9 @@ const resolvers = {
 		bookCount: async (root, args) => {
 			// Finds all Books with the author's id
 			// $in could be read as includes, the weird syntax is just due to mongoose API
-			const author = await Book.find({ author: { $in: [root._id] } })
+			const bookCount = await Book.find({ author: { $in: [root._id] } })
 
-			return author.length
+			return bookCount.length
 		},
 	},
 
