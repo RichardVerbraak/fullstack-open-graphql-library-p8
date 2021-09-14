@@ -24,16 +24,19 @@ const resolvers = {
 	},
 
 	Query: {
+		// Returns the number of books in the DB
 		bookCount: async () => {
 			const booksLength = await Book.countDocuments()
 
 			return booksLength
 		},
+		// Returns the number of authors in the DB
 		authorCount: async () => {
 			const authorsLength = await Author.countDocuments()
 
 			return authorsLength
 		},
+		// // Returns all books in the DB with their author - by genre or not
 		allBooks: async (root, args) => {
 			if (args.genre) {
 				// Finds the books by genre
@@ -49,11 +52,12 @@ const resolvers = {
 
 			return books
 		},
+		// Returns all authors
 		allAuthors: async () => {
 			const authors = await Author.find({})
 			return authors
 		},
-
+		// Returns the logged in users details
 		me: (root, args, context) => {
 			const user = context.loggedInUser
 
