@@ -17,9 +17,13 @@ const resolvers = {
 		bookCount: async (root, args) => {
 			// Finds all Books with the author's id
 			// $in could be read as includes, the weird syntax is just due to mongoose API
-			const bookCount = await Book.find({ author: { $in: [root._id] } })
+			// const bookCount = await Book.find({ author: { $in: [root._id] } })
 
-			return bookCount.length
+			// return bookCount.length
+
+			const books = await Author.findById(root._id).populate('writtenBooks')
+
+			return books
 		},
 	},
 
@@ -94,6 +98,9 @@ const resolvers = {
 						author: newAuthor._id,
 					})
 
+					newAuthor.writtenBooks = [...newAuthor.writtenBooks, newBook._id]
+					await newAuthor.save()
+
 					// Set newBook to the returned populated one (can't populate on creation)
 					newBook = await Book.findById(newBook._id).populate('author')
 
@@ -109,6 +116,12 @@ const resolvers = {
 						genres,
 						author: authorExists._id,
 					})
+
+					authorExists.writtenBooks = [
+						...authorExists.writtenBooks,
+						newBook._id,
+					]
+					await authorExists.save()
 
 					newBook = await Book.findById(newBook._id).populate('author')
 
