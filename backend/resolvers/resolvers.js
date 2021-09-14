@@ -15,15 +15,18 @@ const pubsub = new PubSub()
 const resolvers = {
 	Author: {
 		bookCount: async (root, args) => {
+			// Old version (before the N+1 problem was solved)
 			// Finds all Books with the author's id
 			// $in could be read as includes, the weird syntax is just due to mongoose API
 			// const bookCount = await Book.find({ author: { $in: [root._id] } })
 
 			// return bookCount.length
 
-			const books = await Author.findById(root._id).populate('writtenBooks')
+			const author = await Author.findById(root._id).populate('writtenBooks')
 
-			return books
+			const bookCount = author.writtenBooks.length
+
+			return bookCount
 		},
 	},
 
@@ -98,6 +101,7 @@ const resolvers = {
 						author: newAuthor._id,
 					})
 
+					// Add book to the author's written books
 					newAuthor.writtenBooks = [...newAuthor.writtenBooks, newBook._id]
 					await newAuthor.save()
 
@@ -117,6 +121,7 @@ const resolvers = {
 						author: authorExists._id,
 					})
 
+					// Add book to the author's written books
 					authorExists.writtenBooks = [
 						...authorExists.writtenBooks,
 						newBook._id,
